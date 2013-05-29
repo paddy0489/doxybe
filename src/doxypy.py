@@ -146,7 +146,6 @@ class Doxypy(object):
 			["FILEHEAD", "FILEHEAD", self.importline_re.search, self.appendFileheadLine],
 			["FILEHEAD", "DEFCLASS", self.defclass_re.search, self.resetCommentSearch],
 			["FILEHEAD", "DEFCLASS_MULTI", self.multiline_defclass_start_re.search, self.resetCommentSearch],
-
 			["FILEHEAD", "DEFCLASS_BODY", self.catchall, self.appendFileheadLine],
 
 			### DEFCLASS
@@ -228,9 +227,7 @@ class Doxypy(object):
 				self.outstream.flush()
 			except IOError:
 				# Fix for FS#33. Catches "broken pipe" when doxygen closes
-
 				# stdout prematurely upon usage of INPUT_FILTER, INLINE_SOURCES
-
 				# and FILTER_SOURCE_FILES.
 				pass
 		self.output = []
