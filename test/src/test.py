@@ -120,6 +120,19 @@ def test9():
 def test10():
 	""" Blub ''' and the same reverse """
 	
+def test11():
+	"""
+	Short docstring sandwich.
+	"""
+	
+def test12():
+	"""
+	Long docstring sandwich.
+
+	Here we've got more lines beyond the
+	initial brief.
+	"""
+	
 class Fnord:
 
 	def __init__(self,
