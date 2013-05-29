@@ -44,6 +44,7 @@ import sys
 import re
 
 from optparse import OptionParser, OptionGroup
+options = None
 
 class FSM(object):
 	"""Implements a finite state machine.
@@ -88,9 +89,18 @@ class FSM(object):
 					self.current_input = input
 					self.current_transition = transition
 					if options.debug:
-						print >>sys.stderr, "# FSM: executing (%s -> %s) for line '%s'" % (from_state, to_state, input)
+						print >> sys.stderr, "# FSM: executing (%s -> %s) for line '%s'" % (from_state, to_state, input)
 					callback(match)
 					return
+
+def outputDebugCallbackIfNeeded(inFunction):
+	"""Simple decorator to remove repeated debug output code."""
+	def __wrappedFunction(*args, **kwargs):
+		"""Wraps the input function with an optionally printed debug statement."""
+		if options.debug:
+			print >> sys.stderr, "# CALLBACK: %s" % inFunction.__name__
+		return inFunction(*args, **kwargs)
+	return __wrappedFunction
 
 class Doxypy(object):
 	def __init__(self):
@@ -213,8 +223,8 @@ class Doxypy(object):
 		if self.output:
 			try:
 				if options.debug:
-					print >>sys.stderr, "# OUTPUT: ", self.output
-				print >>self.outstream, "\n".join(self.output)
+					print >> sys.stderr, "# OUTPUT: ", self.output
+				print >> self.outstream, "\n".join(self.output)
 				self.outstream.flush()
 			except IOError:
 				# Fix for FS#33. Catches "broken pipe" when doxygen closes
@@ -229,65 +239,55 @@ class Doxypy(object):
 		"""The catchall-condition, always returns true."""
 		return True
 
+	@outputDebugCallbackIfNeeded
 	def resetCommentSearch(self, match):
 		"""Restarts a new comment search for a different triggering line.
 
 		Closes the current commentblock and starts a new comment search.
 		"""
-		if options.debug:
-			print >>sys.stderr, "# CALLBACK: resetCommentSearch"
-
 		self.__closeComment()
 		self.startCommentSearch(match)
 
+	@outputDebugCallbackIfNeeded
 	def startCommentSearch(self, match):
 		"""Starts a new comment search.
 
 		Saves the triggering line, resets the current comment and saves
 		the current indentation.
 		"""
-		if options.debug:
-			print >>sys.stderr, "# CALLBACK: startCommentSearch"
 		self.defclass = [self.fsm.current_input]
 		self.comment = []
 		self.indent = match.group(1)
 
+	@outputDebugCallbackIfNeeded
 	def stopCommentSearch(self, match):
 		"""Stops a comment search.
 
 		Closes the current commentblock, resets	the triggering line and
 		appends the current line to the output.
 		"""
-		if options.debug:
-			print >>sys.stderr, "# CALLBACK: stopCommentSearch"
-
 		self.__closeComment()
 
 		self.defclass = []
 		self.output.append(self.fsm.current_input)
 
+	@outputDebugCallbackIfNeeded
 	def appendFileheadLine(self, match):
 		"""Appends a line in the FILEHEAD state.
 
 		Closes the open comment	block, resets it and appends the current line.
 		"""
-
-		if options.debug:
-			print >>sys.stderr, "# CALLBACK: appendFileheadLine"
-
 		self.__closeComment()
 		self.comment = []
 		self.output.append(self.fsm.current_input)
 
+	@outputDebugCallbackIfNeeded
 	def appendCommentLine(self, match):
 		"""Appends a comment line.
 
 		The comment delimiter is removed from multiline start and ends as
 		well as singleline comments.
 		"""
-		if options.debug:
-			print >>sys.stderr, "# CALLBACK: appendCommentLine"
-
 		(from_state, to_state, condition, callback) = self.fsm.current_transition
 
 		# single line comment
@@ -321,18 +321,14 @@ class Doxypy(object):
 			# just append the comment line
 			self.comment.append(self.fsm.current_input)
 
+	@outputDebugCallbackIfNeeded
 	def appendNormalLine(self, match):
 		"""Appends a line to the output."""
-		if options.debug:
-			print >>sys.stderr, "# CALLBACK: appendNormalLine"
-
 		self.output.append(self.fsm.current_input)
 
+	@outputDebugCallbackIfNeeded
 	def appendDefclassLine(self, match):
 		"""Appends a line to the triggering block."""
-		if options.debug:
-			print >>sys.stderr, "# CALLBACK: appendDefclassLine"
-
 		self.defclass.append(self.fsm.current_input)
 
 	def makeCommentBlock(self):
@@ -413,7 +409,7 @@ def optParse():
 	(options, filename) = parser.parse_args()
 
 	if not filename:
-		print >>sys.stderr, "No filename given."
+		print >> sys.stderr, "No filename given."
 		sys.exit(-1)
 
 	return filename[0]
