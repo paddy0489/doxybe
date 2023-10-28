@@ -4,7 +4,7 @@
 # Project related configuration options
 #---------------------------------------------------------------------------
 DOXYFILE_ENCODING      = UTF-8
-PROJECT_NAME           = doxypy
+PROJECT_NAME           = doxybe
 PROJECT_NUMBER         = 0.4
 OUTPUT_DIRECTORY       = ./doc/
 CREATE_SUBDIRS         = NO
@@ -117,7 +117,7 @@ FILE_PATTERNS          = *.c \
                          *.m \
                          *.mm \
                          *.dox \
-                         *.py \
+                         *.be \
                          *.C \
                          *.CC \
                          *.C++ \
@@ -131,7 +131,7 @@ FILE_PATTERNS          = *.c \
                          *.PHP3 \
                          *.M \
                          *.MM \
-                         *.PY
+                         *.BE
 RECURSIVE              = YES
 EXCLUDE                = 
 EXCLUDE_SYMLINKS       = NO
@@ -141,7 +141,7 @@ EXAMPLE_PATH           =
 EXAMPLE_PATTERNS       = *
 EXAMPLE_RECURSIVE      = NO
 IMAGE_PATH             = 
-INPUT_FILTER           = "../src/doxypy.py --autobrief"
+INPUT_FILTER           = "../src/doxybe.py --autobrief"
 FILTER_PATTERNS        = 
 FILTER_SOURCE_FILES    = YES
 #---------------------------------------------------------------------------
@@ -286,3 +286,4 @@ DOT_CLEANUP            = YES
 # Configuration::additions related to the search engine   
 #---------------------------------------------------------------------------
 SEARCHENGINE           = NO
+EXTENSION_MAPPING      = .be=python
