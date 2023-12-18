@@ -344,7 +344,7 @@ class Doxypy(object):
         doxyStart = "##"
         commentLines = self.comment
 
-        commentLines = map(lambda x: "%s# %s" % (self.indent, x), commentLines)
+        commentLines = map(lambda x: "%s# %s" % (self.indent, x.strip()), commentLines)
         l = [self.indent + doxyStart]
         l.extend(commentLines)
 
